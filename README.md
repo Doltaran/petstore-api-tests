@@ -33,7 +33,7 @@ build/reports/tests/test/index.html
 ---
 ```md
 ## Project Structure
-```text
+```
 src/test/java
 └── ru/ragim/petstore
 ├── config

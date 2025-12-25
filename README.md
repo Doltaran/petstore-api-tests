@@ -19,10 +19,10 @@ https://petstore.swagger.io
 ## How to Run Tests
 
 ### Windows (PowerShell)
-.\gradlew.bat clean test
+>.\gradlew.bat clean test
 
 ### macOS / Linux
-./gradlew clean test
+>./gradlew clean test
 
 
 После выполнения команды результат прогона тестов выводится в консоль.  

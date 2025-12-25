@@ -19,6 +19,7 @@ https://petstore.swagger.io
 ## How to Run Tests
 
 ### Windows (PowerShell)
+```powershell
 .\gradlew.bat clean test
 
 ### macOS / Linux
@@ -30,9 +31,9 @@ HTML-отчёт доступен по пути:
 build/reports/tests/test/index.html
 
 ---
-
+```md
 ## Project Structure
-```
+```text
 src/test/java
 └── ru/ragim/petstore
 ├── config

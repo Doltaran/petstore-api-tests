@@ -4,35 +4,24 @@ import io.restassured.response.Response;
 
 import java.util.Map;
 
-public class UserApi extends BaseApi {
+public class UserClient extends BaseApiClient {
 
-    public Response createUser(Map<String, Object> body) {
-        return req()
-                .body(body)
-                .when()
-                .post("/user");
+    public Response create(Map<String, ?> body) {
+        return req().body(body).when().post("/user");
     }
 
-    public Response getUser(String username) {
-        return req()
-                .when()
-                .get("/user/{username}", username);
+    public Response get(String username) {
+        return req().when().get("/user/{username}", username);
     }
 
-    public Response updateUser(String username, Map<String, Object> body) {
-        return req()
-                .body(body)
-                .when()
-                .put("/user/{username}", username);
+    public Response update(String username, Map<String, ?> body) {
+        return req().body(body).when().put("/user/{username}", username);
     }
 
-    public Response deleteUser(String username) {
-        return req()
-                .when()
-                .delete("/user/{username}", username);
+    public Response delete(String username) {
+        return req().when().delete("/user/{username}", username);
     }
 
-    // Метод "с кучей параметров": login
     public Response login(String username, String password) {
         return req()
                 .queryParam("username", username)
@@ -42,8 +31,6 @@ public class UserApi extends BaseApi {
     }
 
     public Response logout() {
-        return req()
-                .when()
-                .get("/user/logout");
+        return req().when().get("/user/logout");
     }
 }

@@ -1,4 +1,14 @@
 package ru.ragim.petstore.client;
 
-public class BaseApiClient {
+import io.restassured.specification.RequestSpecification;
+
+import static io.restassured.RestAssured.given;
+
+public abstract class BaseApiClient {
+
+    protected RequestSpecification req() {
+        return given()
+                .contentType("application/json")
+                .accept("application/json");
+    }
 }

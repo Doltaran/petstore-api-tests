@@ -78,14 +78,10 @@ src/test/java/ru/ragim/petstore/
 │   └── UserSteps.java         # Шаги для работы с пользователями
 │
 └── tests/                     # Тестовые классы
-    ├── pet/
-    │   └── PetTests.java      # Все тесты для питомцев (25 тестов)
-    ├── user/
-    │   └── UserTests.java      # Все тесты для пользователей (11 тестов)
-    ├── store/
-    │   └── StoreTests.java    # Все тесты для заказов (11 тестов)
-    └── integration/
-        └── PetStoreIntegrationTests.java  # Интеграционные тесты
+    ├─    PetTests.java      # Все тесты для питомцев (25 тестов)
+    ├──   UserTests.java      # Все тесты для пользователей (11 тестов)
+    ├──   StoreTests.java    # Все тесты для заказов (11 тестов)
+    └──   PetStoreIntegrationTests.java  # Интеграционные тесты
 ```
 
 ### Нагрузочные тесты (Gatling)

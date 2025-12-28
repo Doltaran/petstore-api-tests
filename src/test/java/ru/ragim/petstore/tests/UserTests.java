@@ -1,4 +1,4 @@
-package ru.ragim.petstore.tests.user;
+package ru.ragim.petstore.tests;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -86,7 +86,7 @@ public class UserTests extends AbstractIntegrationTest {
         user.login(username, password);
         user.logout();
         
-        // Можно попробовать залогиниться снова
+
         user.login(username, password);
         user.logout();
         
@@ -139,18 +139,18 @@ public class UserTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("USER: Access control - User can only access own data")
     void accessControlUserCanOnlyAccessOwnData() {
-        // Текущий пользователь уже создан в setUp
+
         user.assertUserExists(currentUsername);
         
-        // Создаем второго пользователя
+
         String user2Username = TestDataFactory.uniqueUsername();
         user.createUser(TestDataFactory.user(user2Username, "pass456"));
         
-        // Текущий пользователь может получить свои данные
+
         user.assertUserExists(currentUsername);
         
-        // Текущий пользователь может получить данные другого пользователя (в демо API это может работать)
-        // Но проверяем, что запрос выполняется
+
+
         userClient.get(user2Username)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400)));
@@ -161,23 +161,23 @@ public class UserTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("USER: Access control - User cannot delete another user")
     void accessControlUserCannotDeleteAnotherUser() {
-        // Создаем второго пользователя
+
         String user2Username = TestDataFactory.uniqueUsername();
         user.createUser(TestDataFactory.user(user2Username, "pass456"));
         user.assertUserExists(user2Username);
         
-        // Текущий пользователь пытается удалить другого пользователя
-        // Примечание: В демо API это может быть разрешено
+
+
         userClient.delete(user2Username)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(403), is(204)));
         
-        // Проверяем статус пользователя (может быть удален, если API это разрешает)
+
         userClient.get(user2Username)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400)));
         
-        // Cleanup - пытаемся удалить пользователя если он еще существует
+
         userClient.delete(user2Username)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(204)));

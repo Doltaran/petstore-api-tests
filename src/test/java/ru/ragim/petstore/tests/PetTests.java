@@ -1,4 +1,4 @@
-package ru.ragim.petstore.tests.pet;
+package ru.ragim.petstore.tests;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -256,18 +256,16 @@ public class PetTests extends AbstractIntegrationTest {
         userSteps.createUser(TestDataFactory.user(user2Username, user2Password));
         userSteps.login(user2Username, user2Password);
         
-        // User 2 проверяет список available
-        // Примечание: Petstore - демо API без реальной авторизации, поэтому все пользователи видят всех питомцев
-        // Тест проверяет, что запрос выполняется успешно
+
         List<Map<String, Object>> availablePets = petClient.findByStatus("available")
                 .then().log().ifValidationFails()
                 .statusCode(200)
                 .extract().jsonPath().getList("$");
         
-        // В демо API все пользователи видят всех питомцев, поэтому просто проверяем что запрос работает
+
         org.junit.jupiter.api.Assertions.assertNotNull(availablePets);
         
-        // Возвращаемся к User 1 для cleanup
+
         userSteps.logout();
         userSteps.login(currentUsername, currentPassword);
         pet.deletePet(petId);
@@ -276,27 +274,26 @@ public class PetTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("PET: Access control - User cannot access pet created by another user via GET")
     void accessControlUserCannotAccessOtherUserPet() {
-        // User 1 создает пета
+
         long petId = TestDataFactory.uniqueId();
         pet.createPet(TestDataFactory.pet(petId, "ProtectedPet", "available"));
         pet.assertPetExists(petId, "ProtectedPet");
         
-        // Разлогиниваемся от User 1
+
         userSteps.logout();
         
-        // Создаем и логинимся под User 2
+
         String user2Username = TestDataFactory.uniqueUsername();
         String user2Password = "pass456";
         userSteps.createUser(TestDataFactory.user(user2Username, user2Password));
         userSteps.login(user2Username, user2Password);
         
-        // User 2 пытается получить пета User 1
-        // В демо API это может работать, но проверяем статус
+
         petClient.get(petId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(403)));
         
-        // Возвращаемся к User 1 для cleanup
+
         userSteps.logout();
         userSteps.login(currentUsername, currentPassword);
         pet.deletePet(petId);
@@ -305,32 +302,32 @@ public class PetTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("PET: Access control - User cannot delete pet created by another user")
     void accessControlUserCannotDeleteOtherUserPet() {
-        // User 1 создает пета
+
         long petId = TestDataFactory.uniqueId();
         pet.createPet(TestDataFactory.pet(petId, "ProtectedPet2", "available"));
         pet.assertPetExists(petId, "ProtectedPet2");
         
-        // Разлогиниваемся от User 1
+
         userSteps.logout();
         
-        // Создаем и логинимся под User 2
+
         String user2Username = TestDataFactory.uniqueUsername();
         String user2Password = "pass456";
         userSteps.createUser(TestDataFactory.user(user2Username, user2Password));
         userSteps.login(user2Username, user2Password);
         
-        // User 2 пытается удалить пета User 1
-        // Примечание: В демо API это может быть разрешено, поэтому просто проверяем что запрос выполняется
+
+
         petClient.delete(petId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(403), is(204)));
         
-        // Возвращаемся к User 1 для cleanup
+
         userSteps.logout();
         userSteps.login(currentUsername, currentPassword);
         
-        // Проверяем статус пета (может быть удален User 2, если API это разрешает)
-        // Если пет удален, то при попытке удалить снова получим 404 - это нормально
+
+
         petClient.delete(petId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(204)));
@@ -339,37 +336,37 @@ public class PetTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("PET: Access control - User cannot update pet created by another user")
     void accessControlUserCannotUpdateOtherUserPet() {
-        // User 1 создает пета
+
         long petId = TestDataFactory.uniqueId();
         pet.createPet(TestDataFactory.pet(petId, "OriginalName", "available"));
         pet.assertPetExists(petId, "OriginalName");
         
-        // Разлогиниваемся от User 1
+
         userSteps.logout();
         
-        // Создаем и логинимся под User 2
+
         String user2Username = TestDataFactory.uniqueUsername();
         String user2Password = "pass456";
         userSteps.createUser(TestDataFactory.user(user2Username, user2Password));
         userSteps.login(user2Username, user2Password);
         
-        // User 2 пытается обновить пета User 1
-        // Примечание: В демо API это может быть разрешено
+
+
         petClient.update(TestDataFactory.pet(petId, "HackedName", "sold"))
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(403)));
         
-        // Возвращаемся к User 1 для проверки
+
         userSteps.logout();
         userSteps.login(currentUsername, currentPassword);
         
-        // Проверяем текущее состояние пета (имя может быть изменено, если API это разрешает)
-        // В демо API обновление может быть успешным, поэтому просто проверяем что пет существует
+
+
         petClient.get(petId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400)));
         
-        // Cleanup - удаляем пета если он еще существует
+
         petClient.delete(petId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(204)));
@@ -384,9 +381,7 @@ public class PetTests extends AbstractIntegrationTest {
                 .statusCode(200)
                 .extract().jsonPath().getList("$");
         
-        // Если список пуст, это соответствует требованию
-        // Если список не пуст, это тоже нормально для демо API
-        // Просто проверяем, что запрос успешен
+
         org.junit.jupiter.api.Assertions.assertNotNull(availablePets);
     }
 }

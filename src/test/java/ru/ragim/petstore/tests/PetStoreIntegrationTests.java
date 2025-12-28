@@ -1,4 +1,4 @@
-package ru.ragim.petstore.tests.integration;
+package ru.ragim.petstore.tests;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

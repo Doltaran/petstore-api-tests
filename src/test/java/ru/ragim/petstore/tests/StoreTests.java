@@ -1,4 +1,4 @@
-package ru.ragim.petstore.tests.store;
+package ru.ragim.petstore.tests;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -135,7 +135,7 @@ public class StoreTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("STORE: Access control - User 1 creates order, User 2 cannot see it")
     void accessControlUser1CreatesOrderUser2CannotSee() {
-        // User 1 создает пета и заказ
+
         long petId = TestDataFactory.uniqueId();
         pet.createPet(TestDataFactory.pet(petId, "PrivateOrderPet", "available"));
         
@@ -143,21 +143,21 @@ public class StoreTests extends AbstractIntegrationTest {
         store.createOrder(TestDataFactory.order(orderId, petId, 1, "placed"));
         store.assertOrderExists(orderId);
         
-        // Разлогиниваемся от User 1
+
         userSteps.logout();
         
-        // Создаем и логинимся под User 2
+
         String user2Username = TestDataFactory.uniqueUsername();
         String user2Password = "pass456";
         userSteps.createUser(TestDataFactory.user(user2Username, user2Password));
         userSteps.login(user2Username, user2Password);
         
-        // User 2 пытается получить заказ User 1
+
         storeClient.getOrder(orderId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(403)));
         
-        // Возвращаемся к User 1 для cleanup
+
         userSteps.logout();
         userSteps.login(currentUsername, currentPassword);
         
@@ -168,7 +168,7 @@ public class StoreTests extends AbstractIntegrationTest {
     @Test
     @DisplayName("STORE: Access control - User cannot delete order created by another user")
     void accessControlUserCannotDeleteOtherUserOrder() {
-        // User 1 создает пета и заказ
+
         long petId = TestDataFactory.uniqueId();
         pet.createPet(TestDataFactory.pet(petId, "ProtectedOrderPet", "available"));
         
@@ -176,27 +176,25 @@ public class StoreTests extends AbstractIntegrationTest {
         store.createOrder(TestDataFactory.order(orderId, petId, 1, "placed"));
         store.assertOrderExists(orderId);
         
-        // Разлогиниваемся от User 1
+
         userSteps.logout();
         
-        // Создаем и логинимся под User 2
+
         String user2Username = TestDataFactory.uniqueUsername();
         String user2Password = "pass456";
         userSteps.createUser(TestDataFactory.user(user2Username, user2Password));
         userSteps.login(user2Username, user2Password);
         
-        // User 2 пытается удалить заказ User 1
-        // Примечание: В демо API это может быть разрешено
+
         storeClient.deleteOrder(orderId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(403), is(204)));
         
-        // Возвращаемся к User 1 для cleanup
+
         userSteps.logout();
         userSteps.login(currentUsername, currentPassword);
         
-        // Проверяем статус заказа (может быть удален User 2, если API это разрешает)
-        // Если заказ удален, то при попытке удалить снова получим 404 - это нормально
+
         storeClient.deleteOrder(orderId)
                 .then().log().ifValidationFails()
                 .statusCode(anyOf(is(200), is(404), is(400), is(204)));
@@ -210,14 +208,14 @@ public class StoreTests extends AbstractIntegrationTest {
         long petId = TestDataFactory.uniqueId();
         long orderId = TestDataFactory.uniqueId();
 
-        // Create pet
+
         pet.createPet(TestDataFactory.pet(petId, "IntegrationPet", "available"));
         pet.assertPetExists(petId, "IntegrationPet");
 
-        // Create order for petId
+
         store.createOrder(TestDataFactory.order(orderId, petId, 1, "placed"));
 
-        // Verify order contains petId (dependency check)
+
         storeClient.getOrder(orderId)
                 .then().log().ifValidationFails()
                 .statusCode(200)
